@@ -15,7 +15,7 @@ CLS="de.uni_mannheim.informatik.dws.searchjoin.cli.TableIndexing"
 IDX="index/"
 WEB="insert path to tables here"
 
-java c- $JAR $CLS -index $WEB
+java c- $JAR $CLS -index $IDX $WEB
 ```
 
 Run the search join with the just created index:
@@ -29,7 +29,7 @@ IDX="index/"
 QUERY="insert path to query table(s) here"
 RESULT="result/"
 
-java c- $JAR $CLS -index $WEB -out $RESULT $QUERY
+java c- $JAR $CLS -index $IDX -out $RESULT $QUERY
 ```
 
 ## Acknowledgements
@@ -44,5 +44,7 @@ The Search Join code can be used under the [Apache 2.0 License](http://www.apach
 ## References
 
 [1] Lehmberg, O., Ritze, D., Ristoski, P., Meusel, R., Paulheim, H., & Bizer, C. (2015). The Mannheim Search Join Engine. Web semantics: science, services and agents on the World Wide Web, 35, 159-166.
+
 [2] [http://searchjoins.webdatacommons.org/](http://searchjoins.webdatacommons.org/)
+
 [3] Christian Bizer: Search Joins with the Web. Invited Lecture at the 17th International Conference on Database Theory (ICDT2014), Athens, Greece, March 2014.
