@@ -19,6 +19,8 @@ import de.uni_mannheim.informatik.dws.winter.similarity.string.GeneralisedString
 import de.uni_mannheim.informatik.dws.winter.similarity.string.LevenshteinSimilarity;
 
 /**
+ * Compares the headers of {@link MatchableTableColumn}s using generalised jaccard with inner levenshtein similarity
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */

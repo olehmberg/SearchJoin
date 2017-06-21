@@ -22,6 +22,9 @@ import de.uni_mannheim.informatik.dws.winter.processing.DataIterator;
 import de.uni_mannheim.informatik.dws.winter.processing.Processable;
 
 /**
+ * 
+ * Generates all {@link MatchableTableColumn} values for instance-based schema matching
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */

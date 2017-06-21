@@ -25,6 +25,7 @@ import com.beust.jcommander.Parameter;
 import de.uni_mannheim.informatik.dws.searchjoin.data.MatchableTableColumn;
 import de.uni_mannheim.informatik.dws.searchjoin.data.MatchableTableRow;
 import de.uni_mannheim.informatik.dws.searchjoin.data.WebTableDataSetLoader;
+import de.uni_mannheim.informatik.dws.searchjoin.datafusion.SearchJoinSchemaConsolidator;
 import de.uni_mannheim.informatik.dws.searchjoin.datafusion.WebTableFuser;
 import de.uni_mannheim.informatik.dws.searchjoin.index.TableToDocumentConverter;
 import de.uni_mannheim.informatik.dws.searchjoin.index.WebTableIndexEntry;
@@ -48,6 +49,14 @@ import de.uni_mannheim.informatik.dws.winter.webtables.parsers.TableFactory;
 import de.uni_mannheim.informatik.dws.winter.webtables.writers.CSVTableWriter;
 
 /**
+ * 
+ * Runs a Search Join for the given query tables.
+ * 
+ * For each query table, the index is searched for matching tables.
+ * Then, the schema of these tables and the query tables is matched and consolidated, which adds new attributes to the query table.
+ * Next, the records of all tables are matched for find duplicates and the values of these duplicates are fused by voting.
+ * Records that do not match the query table are ignored.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -68,11 +77,13 @@ public class SearchJoin extends Executable {
 	}
 	
 	public void run() throws Exception {
+		// create the index and index manager
 		IIndex index = new DefaultIndex(indexLocation);
 		WebTableIndexManager idx = new WebTableIndexManager(index, new TableToDocumentConverter());
 		
 		Map<Integer, Table> tablesById = new HashMap<>();
 		
+		// iterate over all query tables passed from the command line
 		for(String p : params) {
 			
 			/*******************************************************
@@ -104,6 +115,7 @@ public class SearchJoin extends Executable {
 
 				// add the query table to the search results
 				// it will match the query table perfectly and make sure that all records are kept in the final result
+				// even if no other table contained a certain record
 				Table query = fac.createTableFromFile(new File(p));
 				query.setPath("query");
 				query.setTableId(tableId);
@@ -125,8 +137,9 @@ public class SearchJoin extends Executable {
 				
 				// get the ids of all tables in the search result that could be matched
 				Set<Integer> matchedTables = new HashSet<>(schemaCorrespondences.transform(
-						(Correspondence<MatchableTableColumn, Matchable> cor,
-						DataIterator<Integer> c)-> c.next(new Integer(cor.getSecondRecord().getTableId()))).distinct().get());
+						(Correspondence<MatchableTableColumn, Matchable> cor, DataIterator<Integer> c)
+							-> c.next(new Integer(cor.getSecondRecord().getTableId()))).distinct().get()
+						);
 				
 				// remove unmatched tables
 				Processable<MatchableTableColumn> attributes = tablesDS.getSchema().filter(((c)->matchedTables.contains(c.getTableId())));
@@ -139,26 +152,26 @@ public class SearchJoin extends Executable {
 				attributes = queryDS.getSchema().append(attributes);
 				SearchJoinSchemaConsolidator consolidator = new SearchJoinSchemaConsolidator(tablesById);
 				Pair<Table, Table> consolidated = consolidator.consolidate(queryDS, tablesDS, attributes, schemaCorrespondences);
-				
-				Table queryConsolidated = consolidated.getFirst();
-				Table tablesConsolidated = consolidated.getSecond();
-				
-				// set the subject column to the column that was the subject column in the query table
-				for(TableColumn c: queryConsolidated.getSchema().getRecords()) {
-					if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
-						queryConsolidated.setSubjectColumnIndex(c.getColumnIndex());
-						break;
-					}
-				}
-				for(TableColumn c: tablesConsolidated.getSchema().getRecords()) {
-					if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
-						tablesConsolidated.setSubjectColumnIndex(c.getColumnIndex());
-						break;
-					}
-				}
 	
 				if(consolidated!=null) {
 				
+					Table queryConsolidated = consolidated.getFirst();
+					Table tablesConsolidated = consolidated.getSecond();
+					
+					// set the subject column to the column that was the subject column in the query table
+					for(TableColumn c: queryConsolidated.getSchema().getRecords()) {
+						if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
+							queryConsolidated.setSubjectColumnIndex(c.getColumnIndex());
+							break;
+						}
+					}
+					for(TableColumn c: tablesConsolidated.getSchema().getRecords()) {
+						if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
+							tablesConsolidated.setSubjectColumnIndex(c.getColumnIndex());
+							break;
+						}
+					}
+	
 					/*******************************************************
 					 * IDENTITY RESOLUTION
 					 *******************************************************/
@@ -170,10 +183,12 @@ public class SearchJoin extends Executable {
 					// run identity resolution
 					Processable<Correspondence<MatchableTableRow, Matchable>> recordCorrespondences = matcher.matchRecords(queryDS, tablesDS);
 	
-					// make sure that no to records from the query table are mapped to the same record in a result table
-					TopKCorrespondencesAggregator<MatchableTableRow, Matchable> aggregator = new TopKCorrespondencesAggregator<>(1);
+					// make sure that no two records from the query table are mapped to the same record in a result table
+					// the result would be that these records are merged in the final result
 					recordCorrespondences = recordCorrespondences
-							.aggregateRecords(new AggregateBySecondRecordRule<MatchableTableRow, Matchable>(0.0), aggregator)
+							.aggregateRecords(
+									new AggregateBySecondRecordRule<MatchableTableRow, Matchable>(0.0), 
+									new TopKCorrespondencesAggregator<>(1))
 							.transform(new FlattenAggregatedCorrespondencesRule<>());
 					
 					/*******************************************************
@@ -185,8 +200,10 @@ public class SearchJoin extends Executable {
 					
 					Table fused = fuser.fuseTables(queryConsolidated, queryDS, tablesDS, recordCorrespondences);
 					
+					// remove columns that are mostly NULL
 					fused = consolidator.removeSparseColumns(fused, 0.1);
 					
+					// write the final result
 					CSVTableWriter w = new CSVTableWriter();
 					File outF = new File(outputLocation);
 					outF.mkdirs();

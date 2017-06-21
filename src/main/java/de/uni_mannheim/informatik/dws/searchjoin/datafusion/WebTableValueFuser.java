@@ -22,6 +22,9 @@ import de.uni_mannheim.informatik.dws.winter.model.RecordGroup;
 import de.uni_mannheim.informatik.dws.winter.processing.Processable;
 
 /**
+ * 
+ * A value fuser for {@link MatchableTableRow}s for a specific {@link MatchableTableColumn}.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -30,7 +33,11 @@ public class WebTableValueFuser extends AttributeValueFuser<Object, MatchableTab
 	private MatchableTableColumn targetColumn;
 	
 	/**
+	 * 
 	 * @param conflictResolution
+	 * 			The conflict resolution function that this fuser should apply
+	 * @param targetColumn
+	 * 			The {@link MatchableTableColumn} that is fused by this fuser
 	 */
 	public WebTableValueFuser(
 			ConflictResolutionFunction<Object, MatchableTableRow, MatchableTableColumn> conflictResolution, MatchableTableColumn targetColumn) {

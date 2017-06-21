@@ -32,6 +32,9 @@ import de.uni_mannheim.informatik.dws.winter.webtables.Table;
 import de.uni_mannheim.informatik.dws.winter.webtables.parsers.TableFactory;
 
 /**
+ * 
+ * Reads all tables that are passed as commands (either as file names or directory names) and adds them to the index.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -50,9 +53,11 @@ public class TableIndexing extends Executable {
 	
 	public void run() {
 		
+		// create the index and indexer
 		IIndex index = new DefaultIndex(indexDir);
 		TableIndexer ti = new TableIndexer(index, new TableToDocumentConverter());
 		
+		// get all files that were passed from the command line
 		Processable<File> filesToIndex = new ParallelProcessableCollection<>();
 		
 		for(String p : params) {
@@ -65,11 +70,11 @@ public class TableIndexing extends Executable {
 			} else {
 				filesToIndex.add(f);
 			}
-			
 		}
 		
 		System.out.println(String.format("Indexing %d tables", filesToIndex.size()));
 		
+		// iterate over all files and add them to the index
 		filesToIndex.iterate(
 				(f) -> {
 					
@@ -83,6 +88,7 @@ public class TableIndexing extends Executable {
 					
 				});
 		
+		// close the index writer
 		ti.closeWriter();
 		
 		System.out.println("Done.");

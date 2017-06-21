@@ -21,6 +21,9 @@ import de.uni_mannheim.informatik.dws.winter.processing.DataIterator;
 import de.uni_mannheim.informatik.dws.winter.processing.Processable;
 
 /**
+ * 
+ * Generates the subject column values of {@link MatchableTableRow}s as values for simple identity resolution.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */

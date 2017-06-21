@@ -25,6 +25,8 @@ import de.uni_mannheim.informatik.dws.winter.model.MatchableValue;
 import de.uni_mannheim.informatik.dws.winter.processing.Processable;
 
 /**
+ * Implements schema and record matching.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */

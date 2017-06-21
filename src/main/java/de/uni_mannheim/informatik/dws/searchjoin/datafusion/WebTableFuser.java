@@ -30,6 +30,8 @@ import de.uni_mannheim.informatik.dws.winter.webtables.Table;
 import de.uni_mannheim.informatik.dws.winter.webtables.TableRow;
 
 /**
+ * Fuses the query and result datasets using the provided record correspondences. 
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */

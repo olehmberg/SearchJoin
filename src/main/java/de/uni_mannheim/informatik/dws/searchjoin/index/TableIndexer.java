@@ -26,6 +26,9 @@ import de.uni_mannheim.informatik.dws.winter.index.IIndex;
 import de.uni_mannheim.informatik.dws.winter.webtables.Table;
 
 /**
+ * 
+ * Adds tables to an index
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -50,10 +53,6 @@ public class TableIndexer {
 			WebTableIndexEntry e = new WebTableIndexEntry();
 			e.setValues(converter.convertTableToDocument(t));
 			e.setTablePath(f.getAbsolutePath());
-
-//			if (t.getMapping().getMappedClass() != null) {
-//				e.setDbpediaClass(t.getMapping().getMappedClass().getFirst());
-//			}
 
 			try {
 				writer.addDocument(e.createDocument());

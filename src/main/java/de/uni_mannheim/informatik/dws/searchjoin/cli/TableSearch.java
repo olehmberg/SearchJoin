@@ -32,6 +32,8 @@ import de.uni_mannheim.informatik.dws.winter.webtables.Table;
 import de.uni_mannheim.informatik.dws.winter.webtables.parsers.TableFactory;
 
 /**
+ * Searches the index for matching tables given a query table
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -49,17 +51,22 @@ public class TableSearch extends Executable {
 	}
 	
 	public void run() {
+		// create the index and index manager
 		IIndex index = new DefaultIndex(indexLocation);
 		WebTableIndexManager idx = new WebTableIndexManager(index, new TableToDocumentConverter());
 		
+		// for each query table passed from the command line
 		for(String p : params) {
 			
+			// load the query table
 			TableFactory fac = new TableFactory();
 			
 			Table t = fac.createTableFromFile(new File(p));
 			
+			// search matching tables
 			List<WebTableIndexEntry> result = idx.search(t);
 			
+			// print the results
 			System.out.println(String.format("Search results for table %s", t.getPath()));
 			for(WebTableIndexEntry entry : result) {
 				System.out.println(String.format("\t%s", entry.getTablePath()));

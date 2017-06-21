@@ -25,6 +25,9 @@ import org.apache.lucene.document.TextField;
 
 
 /**
+ * 
+ * Model for index entries about tables
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
@@ -32,19 +35,15 @@ public class WebTableIndexEntry {
 
 	private String values;
 	private String tablePath;
-	private String dbpediaClass;
 	
 	public static final String VALUES_FIELD = "values";
 	public static final String TABLE_PATH_FIELD = "table_path";
-//	public static final String DBPEDIA_CLASS_FIELD = "dbpedia_class";
 	
 	public static WebTableIndexEntry fromDocument(Document doc)
 	{
 		WebTableIndexEntry e = new WebTableIndexEntry();
 		
-//		e.setValues(doc.getField(VALUES_FIELD).stringValue());
 		e.setTablePath(doc.getField(TABLE_PATH_FIELD).stringValue());
-//		e.setDbpediaClass(doc.getField(DBPEDIA_CLASS_FIELD).stringValue());
 
 		return e;
 	}
@@ -55,7 +54,6 @@ public class WebTableIndexEntry {
 		
 		doc.add(new TextField(VALUES_FIELD, values, Field.Store.NO));
 		doc.add(new StoredField(TABLE_PATH_FIELD, tablePath));
-//		doc.add(new StringField(DBPEDIA_CLASS_FIELD, dbpediaClass, Field.Store.YES));
 		
 		return doc;
 	}
@@ -67,15 +65,6 @@ public class WebTableIndexEntry {
 	public void setValues(String entityLabels) {
 		this.values = entityLabels;
 	}
-
-//	public String getDbpediaClass() {
-//		return dbpediaClass;
-//	}
-//
-//	public void setDbpediaClass(String dbpediaClass) {
-//		this.dbpediaClass = dbpediaClass;
-//	}
-
 	public String getTablePath() {
 		return tablePath;
 	}
@@ -88,7 +77,6 @@ public class WebTableIndexEntry {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((dbpediaClass == null) ? 0 : dbpediaClass.hashCode());
 		result = prime * result + ((values == null) ? 0 : values.hashCode());
 		result = prime * result + ((tablePath == null) ? 0 : tablePath.hashCode());
 		return result;
@@ -103,11 +91,6 @@ public class WebTableIndexEntry {
 		if (getClass() != obj.getClass())
 			return false;
 		WebTableIndexEntry other = (WebTableIndexEntry) obj;
-		if (dbpediaClass == null) {
-			if (other.dbpediaClass != null)
-				return false;
-		} else if (!dbpediaClass.equals(other.dbpediaClass))
-			return false;
 		if (values == null) {
 			if (other.values != null)
 				return false;

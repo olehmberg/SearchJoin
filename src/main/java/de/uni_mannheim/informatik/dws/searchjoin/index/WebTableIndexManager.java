@@ -40,6 +40,9 @@ import de.uni_mannheim.informatik.dws.winter.webtables.Table;
 import de.uni_mannheim.informatik.dws.winter.webtables.WebTablesStringNormalizer;
 
 /**
+ * 
+ * Manages the search for tables.
+ * 
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
