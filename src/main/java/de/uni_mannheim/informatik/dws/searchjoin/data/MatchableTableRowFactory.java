@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.uni_mannheim.informatik.dws.winter.model.FusableFactory;
+import de.uni_mannheim.informatik.dws.winter.model.FusibleFactory;
 import de.uni_mannheim.informatik.dws.winter.model.RecordGroup;
 import de.uni_mannheim.informatik.dws.winter.utils.query.Q;
 
@@ -25,7 +25,7 @@ import de.uni_mannheim.informatik.dws.winter.utils.query.Q;
  * @author Oliver Lehmberg (oli@dwslab.de)
  *
  */
-public class MatchableTableRowFactory implements FusableFactory<MatchableTableRow, MatchableTableColumn> {
+public class MatchableTableRowFactory implements FusibleFactory<MatchableTableRow, MatchableTableColumn> {
 
 	/* (non-Javadoc)
 	 * @see de.uni_mannheim.informatik.dws.winter.model.FusableFactory#createInstanceForFusion(de.uni_mannheim.informatik.dws.winter.model.RecordGroup)

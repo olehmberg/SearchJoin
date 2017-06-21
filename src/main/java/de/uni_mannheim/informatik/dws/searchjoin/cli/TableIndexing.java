@@ -75,7 +75,7 @@ public class TableIndexing extends Executable {
 		System.out.println(String.format("Indexing %d tables", filesToIndex.size()));
 		
 		// iterate over all files and add them to the index
-		filesToIndex.iterate(
+		filesToIndex.foreach(
 				(f) -> {
 					
 					TableFactory fac = new TableFactory();

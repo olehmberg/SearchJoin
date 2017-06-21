@@ -136,13 +136,13 @@ public class SearchJoin extends Executable {
 				Processable<Correspondence<MatchableTableColumn, Matchable>> schemaCorrespondences = matcher.matchSchemas(queryDS, tablesDS);
 				
 				// get the ids of all tables in the search result that could be matched
-				Set<Integer> matchedTables = new HashSet<>(schemaCorrespondences.transform(
+				Set<Integer> matchedTables = new HashSet<>(schemaCorrespondences.map(
 						(Correspondence<MatchableTableColumn, Matchable> cor, DataIterator<Integer> c)
 							-> c.next(new Integer(cor.getSecondRecord().getTableId()))).distinct().get()
 						);
 				
 				// remove unmatched tables
-				Processable<MatchableTableColumn> attributes = tablesDS.getSchema().filter(((c)->matchedTables.contains(c.getTableId())));
+				Processable<MatchableTableColumn> attributes = tablesDS.getSchema().where(((c)->matchedTables.contains(c.getTableId())));
 	
 				/*******************************************************
 				 * SCHEMA CONSOLIDATION
@@ -186,10 +186,10 @@ public class SearchJoin extends Executable {
 					// make sure that no two records from the query table are mapped to the same record in a result table
 					// the result would be that these records are merged in the final result
 					recordCorrespondences = recordCorrespondences
-							.aggregateRecords(
+							.aggregate(
 									new AggregateBySecondRecordRule<MatchableTableRow, Matchable>(0.0), 
 									new TopKCorrespondencesAggregator<>(1))
-							.transform(new FlattenAggregatedCorrespondencesRule<>());
+							.map(new FlattenAggregatedCorrespondencesRule<>());
 					
 					/*******************************************************
 					 * DATA FUSION
