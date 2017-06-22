@@ -160,13 +160,13 @@ public class SearchJoin extends Executable {
 					
 					// set the subject column to the column that was the subject column in the query table
 					for(TableColumn c: queryConsolidated.getSchema().getRecords()) {
-						if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
+						if(c.getProvenance().contains(t.getSubjectColumn().getIdentifier())) {
 							queryConsolidated.setSubjectColumnIndex(c.getColumnIndex());
 							break;
 						}
 					}
 					for(TableColumn c: tablesConsolidated.getSchema().getRecords()) {
-						if(c.getProvenance().contains(t.getSubjectColumn().getProvenanceString())) {
+						if(c.getProvenance().contains(t.getSubjectColumn().getIdentifier())) {
 							tablesConsolidated.setSubjectColumnIndex(c.getColumnIndex());
 							break;
 						}
